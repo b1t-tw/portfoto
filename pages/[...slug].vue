@@ -55,7 +55,7 @@ const { data: currentNav } = await useAsyncData('currentNav', () => {
         class="gallery-swiper w-full h-[80%] my-auto">
         <swiper-slide v-for="image in galleryImages" :key="image" class="bg-white">
           <div class="flex justify-center items-center h-full w-full">
-            <img :src="'/thumbnails'+image" :srcset="image + ' 400w'" class="h-full w-full object-contain m-auto" loading="lazy"/>
+            <img :src="'/resized/large'+image" class="h-full w-full object-contain m-auto" loading="lazy"/>
           </div>
         </swiper-slide>
       </swiper-container>
@@ -63,7 +63,7 @@ const { data: currentNav } = await useAsyncData('currentNav', () => {
         class="gallery-thumbs w-full h-[10%]">
         <swiper-slide v-for="image in galleryImages" :key="image" class="bg-white" style="width: auto;">
           <div class="flex justify-center items-center h-full aspect-square cursor-pointer">
-            <img :src="'/thumbnails'+image" class="h-full w-full object-cover m-auto" loading="lazy" />
+            <img :src="'/resized/small'+image" class="h-full w-full object-cover m-auto" loading="lazy" />
           </div>
         </swiper-slide>
       </swiper-container>
@@ -76,14 +76,14 @@ const { data: currentNav } = await useAsyncData('currentNav', () => {
         autoplay-disable-on-interaction="false">
         <swiper-slide v-for="image in bannerImages" :key="page.path + image" class="bg-white">
           <div class="aspect-[3/2] rounded overflow-hidden">
-            <img :src="'/thumbnails'+image" :srcset="image + ' 400w'" class="w-full h-full object-cover m-auto" loading="lazy" />
+            <img :src="'/resized/large'+image" class="w-full h-full object-cover m-auto" loading="lazy" />
           </div>
         </swiper-slide>
       </swiper-container>
     </div>
     <div v-if="galleryImages?.length" class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
       <div v-for="(image, index) in galleryImages" :key="image" class="aspect-square hover-opacity">
-        <img @click="() => { initialSlide = index; popup = true }" :src="'/thumbnails'+image" class="rounded w-full h-full object-cover cursor-pointer" loading="lazy" />
+        <img @click="() => { initialSlide = index; popup = true }" :src="'/resized/small'+image" class="rounded w-full h-full object-cover cursor-pointer" loading="lazy" />
       </div>
     </div>
     <ContentRenderer :value="page" />
@@ -93,9 +93,9 @@ const { data: currentNav } = await useAsyncData('currentNav', () => {
       <template v-for="nav in currentNav">
         <NuxtLink :to="nav.path">
           <div class="aspect-square relative hover-opacity">
-            <img v-if="nav.banner" :src="'/thumbnails'+nav.banner[0]" class="w-full h-full object-cover rounded mb-6"
+            <img v-if="nav.banner" :src="'/resized/small'+nav.banner[0]" class="w-full h-full object-cover rounded mb-6"
               loading="lazy" />
-            <img v-else-if="nav.gallery" :src="'/thumbnails'+nav.gallery[0]" class="w-full h-full object-cover rounded mb-6"
+            <img v-else-if="nav.gallery" :src="'/resized/small'+nav.gallery[0]" class="w-full h-full object-cover rounded mb-6"
               loading="lazy" />
             <div v-else class="w-full h-full bg-gray-200 rounded mb-6"></div>
             <div
