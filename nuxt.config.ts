@@ -34,11 +34,17 @@ export default defineNuxtConfig({
   hooks: {
     'build:before': async () => {
       const publicImgPath = join(process.cwd(), 'public')
-      const thumbnailsDir = join(publicImgPath, 'thumbnails')
+      const resizedImagesDir = join(publicImgPath, 'resized')
 
-      // Create thumbnails directory if it doesn't exist
-      if (!existsSync(thumbnailsDir)) {
-        mkdirSync(thumbnailsDir, { recursive: true })
+      // Create resized images directory if it doesn't exist
+      if (!existsSync(resizedImagesDir)) {
+        mkdirSync(resizedImagesDir, { recursive: true })
+      }
+
+      // Define image sizes
+      const imageSizes = {
+        small: 480,
+        large: 1920
       }
 
       // Modified getAllFiles function to process images
@@ -50,7 +56,7 @@ export default defineNuxtConfig({
           const fullPath = join(dir, file)
           
           if (statSync(fullPath).isDirectory()) {
-            if (file !== 'thumbnails') { // Skip thumbnails directory
+            if (file !== 'resized') { // Skip resized directory
               allFiles.push(...await getAllFiles(fullPath))
             }
           } else {
@@ -59,25 +65,29 @@ export default defineNuxtConfig({
               const relativePath = '/' + relative(publicImgPath, fullPath).replace(/\\/g, '/')
               allFiles.push(relativePath)
 
-              // Create thumbnail with same relative path structure
+              // Create resized images with same relative path structure
               const relativeDir = relative(publicImgPath, dir)
-              const thumbnailDir = join(thumbnailsDir, relativeDir)
-              const thumbnailPath = join(thumbnailDir, file)
+              
+              // Process each size
+              for (const [size, width] of Object.entries(imageSizes)) {
+                const resizedDir = join(resizedImagesDir, size, relativeDir)
+                const resizedPath = join(resizedDir, file)
 
-              // Create directory structure if it doesn't exist
-              if (!existsSync(thumbnailDir)) {
-                mkdirSync(thumbnailDir, { recursive: true })
-              }
+                // Create directory structure if it doesn't exist
+                if (!existsSync(resizedDir)) {
+                  mkdirSync(resizedDir, { recursive: true })
+                }
 
-              try {
-                await sharp(fullPath)
-                  .resize(360, 360, {
-                    fit: 'outside',
-                    withoutEnlargement: true
-                  })
-                  .toFile(thumbnailPath)
-              } catch (error) {
-                console.error(`Error creating thumbnail for ${file}:`, error)
+                try {
+                  await sharp(fullPath)
+                    .resize(width, null, {
+                      fit: 'inside',
+                      withoutEnlargement: true
+                    })
+                    .toFile(resizedPath)
+                } catch (error) {
+                  console.error(`Error creating ${size} size image for ${file}:`, error)
+                }
               }
             }
           }
@@ -85,9 +95,7 @@ export default defineNuxtConfig({
         return allFiles
       }
 
-      // Get all images and create thumbnails
-      
-      console.log("Generating thumbnails...")
+      console.log("Generating resized images...")
       const imageList = await getAllFiles(publicImgPath)
 
       // Write images to JSON file
