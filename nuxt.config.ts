@@ -3,6 +3,7 @@ import { readdirSync, statSync, writeFileSync, readFileSync, existsSync, mkdirSy
 import { join, relative, resolve, dirname, extname } from 'path'
 import yaml from 'yaml'
 import sharp from 'sharp'
+import tailwindcss from '@tailwindcss/vite'
 
 export const contentDir = () => {
   const contentPath = resolve(__dirname, 'content')
@@ -28,9 +29,14 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
+  vite: {
+    plugins: [
+      tailwindcss(),
+    ],
+  },
   experimental: { appManifest: false },
-  modules: ['@nuxtjs/tailwindcss', '@nuxt/content'],
-  ssr: false,
+  modules: ['@nuxt/content'],
+  css: ['~/assets/css/tailwind.css'],
   hooks: {
     'build:before': async () => {
       const publicImgPath = join(process.cwd(), 'public')
@@ -51,23 +57,23 @@ export default defineNuxtConfig({
       async function getAllFiles(dir: string): Promise<string[]> {
         const files = readdirSync(dir)
         const allFiles: string[] = []
-
+        const resizePromises: Promise<any>[] = []
         for (const file of files) {
           const fullPath = join(dir, file)
-          
+
           if (statSync(fullPath).isDirectory()) {
             if (file !== 'resized') { // Skip resized directory
               allFiles.push(...await getAllFiles(fullPath))
             }
           } else {
-            const ext = extname(file).toLowerCase()
-            if (['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
+            const ext = extname(file)
+            if (['.jpg', '.jpeg', '.png', '.webp'].includes(ext.toLowerCase())) {
               const relativePath = '/' + relative(publicImgPath, fullPath).replace(/\\/g, '/')
               allFiles.push(relativePath)
 
               // Create resized images with same relative path structure
               const relativeDir = relative(publicImgPath, dir)
-              
+
               // Process each size
               for (const [size, width] of Object.entries(imageSizes)) {
                 const resizedDir = join(resizedImagesDir, size, relativeDir)
@@ -79,12 +85,16 @@ export default defineNuxtConfig({
                 }
 
                 try {
-                  await sharp(fullPath)
-                    .resize(width, null, {
-                      fit: 'inside',
-                      withoutEnlargement: true
-                    })
-                    .toFile(resizedPath)
+                  if (!existsSync(resizedPath + '.webp')) {
+                    const _sharpPromise = sharp(fullPath)
+                      .resize(width, null, {
+                        fit: 'inside',
+                        withoutEnlargement: true
+                      })
+                      .webp()
+                      .toFile(resizedPath + '.webp')
+                    resizePromises.push(_sharpPromise)
+                  }
                 } catch (error) {
                   console.error(`Error creating ${size} size image for ${file}:`, error)
                 }
@@ -92,6 +102,7 @@ export default defineNuxtConfig({
             }
           }
         }
+        await Promise.all(resizePromises)
         return allFiles
       }
 
