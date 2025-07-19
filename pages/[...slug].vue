@@ -14,6 +14,19 @@ const setThumbsSwiper = (swiper) => {
 
 // Optimized image processing with memoization
 const imageCache = new Map()
+const imageLookup = new Map()
+
+// Pre-build lookup map for faster filtering
+if (images && Array.isArray(images)) {
+  images.forEach(img => {
+    const prefix = img.split('/').slice(0, -1).join('/') + '/'
+    if (!imageLookup.has(prefix)) {
+      imageLookup.set(prefix, [])
+    }
+    imageLookup.get(prefix).push(img)
+  })
+}
+
 const parseImageList = (gallery) => {
   if (!gallery || !Array.isArray(gallery)) return []
 
@@ -24,7 +37,7 @@ const parseImageList = (gallery) => {
 
   const result = gallery.flatMap((item) => {
     if (item.endsWith('/')) {
-      return images.filter(img => img.startsWith(item))
+      return imageLookup.get(item) || []
     }
     return item
   })
@@ -42,12 +55,16 @@ watch(popup, (isPopup) => {
   }
 })
 
-// Combined data fetching for better performance
+// Run both content queries asynchronously
 const { data: pageData, pending } = await useAsyncData(
   () => `pageData-${route.path}`,
   async () => {
-    const page = await queryCollection('content').path(route.path).first()
-    if (!page) return null
+    const [page, currentNav] = await Promise.all([
+      queryCollection('content').path(route.path).first(),
+      queryCollection('content').where('path', 'LIKE', `${route.path}%`).select('title', 'banner', 'path', 'gallery').all()
+    ])
+
+    if (!page) return { page: null, currentNav }
 
     // Process images in parallel
     const [galleryImages, bannerImages] = await Promise.all([
@@ -58,24 +75,13 @@ const { data: pageData, pending } = await useAsyncData(
     return {
       page,
       galleryImages,
-      bannerImages
+      bannerImages,
+      currentNav
     }
   },
   {
     watch: [route],
-    default: () => null
-  }
-)
-
-// Separate navigation query with caching
-const { data: currentNav } = await useAsyncData(
-  () => `currentNav-${route.path}`,
-  () => {
-    return queryCollection('content').where('path', 'LIKE', `${route.path}%`).select('title', 'banner', 'path', 'gallery').all()
-  },
-  {
-    watch: [route],
-    default: () => []
+    default: () => ({ page: null, currentNav: [] })
   }
 )
 
@@ -83,9 +89,20 @@ const { data: currentNav } = await useAsyncData(
 const page = computed(() => pageData.value?.page)
 const galleryImages = computed(() => pageData.value?.galleryImages || [])
 const bannerImages = computed(() => pageData.value?.bannerImages || [])
+const currentNav = computed(() => pageData.value?.currentNav || [])
+
+// Lazy load Swiper only when needed
+const loadSwiper = async () => {
+  if (typeof window !== 'undefined') {
+    await register()
+  }
+}
 
 onMounted(() => {
-  register()
+  // Only register if we have images to display
+  if (galleryImages.value.length > 0 || bannerImages.value.length > 0) {
+    loadSwiper()
+  }
 })
 </script>
 
