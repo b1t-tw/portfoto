@@ -90,7 +90,7 @@ watch(() => route.path, () => {
         </div>
       </div>
       <div class="min-w-0 min-h-[70vh] max-md:flex">
-        <NuxtPage :info="info" :navContents="navContents" />
+        <NuxtPage :info="info" />
       </div>
     </div>
   </div>

@@ -2,7 +2,7 @@
 import { register } from 'swiper/element/bundle'
 import images from '@/public/images.json'
 
-defineProps(['info', 'navContents'])
+defineProps(['info'])
 const route = useRoute()
 const popup = ref(false)
 const initialSlide = ref(0)
@@ -55,16 +55,16 @@ watch(popup, (isPopup) => {
   }
 })
 
-// Run both content queries asynchronously
+const { data: contentBrief } = await useAsyncData('contentBrief', () => {
+  return queryCollection('content').select('title', 'path', 'banner', 'gallery').all()
+})
+
+// Combined data fetching for better performance
 const { data: pageData, pending } = await useAsyncData(
   () => `pageData-${route.path}`,
   async () => {
-    const [page, currentNav] = await Promise.all([
-      queryCollection('content').path(route.path).first(),
-      queryCollection('content').where('path', 'LIKE', `${route.path}%`).select('title', 'banner', 'path', 'gallery').all()
-    ])
-
-    if (!page) return { page: null, currentNav }
+    const page = await queryCollection('content').path(route.path).first()
+    if (!page) return null
 
     // Process images in parallel
     const [galleryImages, bannerImages] = await Promise.all([
@@ -75,13 +75,12 @@ const { data: pageData, pending } = await useAsyncData(
     return {
       page,
       galleryImages,
-      bannerImages,
-      currentNav
+      bannerImages
     }
   },
   {
     watch: [route],
-    default: () => ({ page: null, currentNav: [] })
+    default: () => null
   }
 )
 
@@ -89,7 +88,9 @@ const { data: pageData, pending } = await useAsyncData(
 const page = computed(() => pageData.value?.page)
 const galleryImages = computed(() => pageData.value?.galleryImages || [])
 const bannerImages = computed(() => pageData.value?.bannerImages || [])
-const currentNav = computed(() => pageData.value?.currentNav || [])
+const currentNav = computed(() => contentBrief.value.filter(item => {
+  return item.path.startsWith(route.path)
+}))
 
 // Lazy load Swiper only when needed
 const loadSwiper = async () => {
