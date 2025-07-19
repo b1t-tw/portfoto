@@ -3,7 +3,6 @@ import { readdirSync, statSync, writeFileSync, readFileSync, existsSync, mkdirSy
 import { join, relative, resolve, dirname, extname } from 'path'
 import yaml from 'yaml'
 import sharp from 'sharp'
-import tailwindcss from '@tailwindcss/vite'
 
 export const contentDir = () => {
   const contentPath = resolve(__dirname, 'content')
@@ -12,6 +11,28 @@ export const contentDir = () => {
 }
 
 export default defineNuxtConfig({
+  // Performance optimizations
+  nitro: {
+    storage: {
+      fs: {
+        driver: 'fs',
+        base: './.nitro/storage'
+      }
+    },
+    routeRules: {
+      '/**': { 
+        headers: {
+          'Cache-Control': 'public, max-age=300, s-maxage=300'
+        }
+      },
+      '/resized/**': { 
+        headers: {
+          'Cache-Control': 'public, max-age=31536000, immutable'
+        }
+      }
+    }
+  },
+  
   content: {
     build: {
       pathMeta: {},
@@ -22,19 +43,50 @@ export default defineNuxtConfig({
       }
     }
   },
+  
   vue: {
     compilerOptions: {
       isCustomElement: (tag) => tag.startsWith('swiper-')
     }
   },
+  
+  // Performance optimizations
+  experimental: { 
+    appManifest: false,
+    payloadExtraction: false,
+    renderJsonPayloads: true
+  },
+  
+  // Build optimizations
+  build: {
+    transpile: ['swiper']
+  },
+  
+  // Vite optimizations
+  vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'swiper': ['swiper'],
+            'sharp': ['sharp']
+          }
+        }
+      }
+    },
+    optimizeDeps: {
+      include: ['swiper/element/bundle']
+    }
+  },
+  
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
-  vite: {
-    plugins: [
-      tailwindcss(),
-    ],
+  postcss: {
+    plugins: {
+      "@tailwindcss/postcss": {},
+      'postcss-nested': {},
+    }
   },
-  experimental: { appManifest: false },
   modules: ['@nuxt/content'],
   css: ['~/assets/css/tailwind.css'],
   hooks: {
