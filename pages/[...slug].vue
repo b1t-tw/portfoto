@@ -8,6 +8,8 @@ const popup = ref(false)
 const initialSlide = ref(0)
 const thumbsSwiper = ref(null)
 
+const contentBrief = inject('contentBrief')
+
 const setThumbsSwiper = (swiper) => {
   thumbsSwiper.value = swiper
 }
@@ -55,10 +57,6 @@ watch(popup, (isPopup) => {
   }
 })
 
-const { data: contentBrief } = await useAsyncData('contentBrief', () => {
-  return queryCollection('content').select('title', 'path', 'banner', 'gallery').all()
-})
-
 // Combined data fetching for better performance
 const { data: pageData, pending } = await useAsyncData(
   () => `pageData-${route.path}`,
@@ -90,7 +88,7 @@ const galleryImages = computed(() => pageData.value?.galleryImages || [])
 const bannerImages = computed(() => pageData.value?.bannerImages || [])
 const currentNav = computed(() => contentBrief.value.filter(item => {
   return item.path.startsWith(route.path)
-}))
+}).sort((a, b) => b.path.split('/').pop() - a.path.split('/').pop()))
 
 // Lazy load Swiper only when needed
 const loadSwiper = async () => {
