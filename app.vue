@@ -4,10 +4,6 @@ import info from '@/public/info.json'
 const { data: navContents } = await useAsyncData('navContents', () => {
   return queryCollectionNavigation('content')
 })
-const { data: contentBrief } = await useAsyncData('contentBrief', () => {
-  return queryCollection('content').select('title', 'path', 'banner', 'gallery').all()
-})
-provide('contentBrief', contentBrief)
 
 const isMenuOpen = ref(false)
 const openMenu = () => {

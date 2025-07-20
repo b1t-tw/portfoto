@@ -8,7 +8,9 @@ const popup = ref(false)
 const initialSlide = ref(0)
 const thumbsSwiper = ref(null)
 
-const contentBrief = inject('contentBrief')
+const { data: contentBrief } = await useAsyncData('contentBrief', () => {
+  return queryCollection('content').select('title', 'path', 'banner', 'gallery').all()
+})
 
 const setThumbsSwiper = (swiper) => {
   thumbsSwiper.value = swiper
@@ -122,9 +124,9 @@ onMounted(() => {
       <template v-if="popup && galleryImages.length">
         <swiper-container thumbs-swiper=".gallery-thumbs" navigation="true" slides-per-view="1" space-between="30"
           loop="true" :initial-slide="initialSlide" effect="fade" class="gallery-swiper w-full h-[80%] my-auto">
-          <swiper-slide v-for="image in galleryImages" :key="image" class="bg-white">
+          <swiper-slide v-for="(image, index) in galleryImages" :key="image" class="bg-white" lazy="true">
             <div class="flex justify-center items-center h-full w-full">
-              <ResizedImg :src="image" size="large" class="h-full w-full object-contain m-auto" loading="lazy" />
+              <ResizedImg :src="image" size="large" class="h-full w-full object-contain m-auto" :loading="index === initialSlide ? 'eager' : 'lazy'" />
             </div>
           </swiper-slide>
         </swiper-container>
@@ -160,7 +162,10 @@ onMounted(() => {
     <!-- Gallery Grid -->
     <div v-if="galleryImages.length" class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
       <div v-for="(image, index) in galleryImages" :key="image" class="aspect-square hover-opacity">
-        <ResizedImg @click="() => { initialSlide = index; popup = true }" :src="image" size="small"
+        <ResizedImg @click="() => { 
+          initialSlide = index; popup = true;
+          console.log('click on index', index)
+        }" :src="image" size="small"
           class="rounded w-full h-full object-cover cursor-pointer" loading="lazy" />
       </div>
     </div>
