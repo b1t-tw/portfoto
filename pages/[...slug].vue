@@ -123,7 +123,7 @@ onMounted(() => {
     <div class="min-w-0 min-h-0 h-full w-full flex flex-col bg-white p-2">
       <template v-if="popup && galleryImages.length">
         <swiper-container thumbs-swiper=".gallery-thumbs" navigation="true" slides-per-view="1" space-between="30"
-          loop="true" :initial-slide="initialSlide" effect="fade" class="gallery-swiper w-full h-[80%] my-auto">
+          loop="true" :initial-slide="initialSlide" effect="fade" cross-fade="true" class="gallery-swiper w-full h-[80%] my-auto">
           <swiper-slide v-for="(image, index) in galleryImages" :key="image" class="bg-white" lazy="true">
             <div class="flex justify-center items-center h-full w-full">
               <ResizedImg :src="image" size="large" class="h-full w-full object-contain m-auto" :loading="index === initialSlide ? 'eager' : 'lazy'" />
