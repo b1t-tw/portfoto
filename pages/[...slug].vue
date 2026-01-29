@@ -38,13 +38,13 @@ if (images && Array.isArray(images)) {
 const onGalleryClick = (index) => {
   initialSlide.value = index
   popup.value = true
-  history.pushState({}, '', '?show=false')
+  history.pushState({}, '', '?')
   history.pushState({}, '', `?show=${index}`)
 }
 
 const onPopClose = () => {
   popup.value = false
-  history.replaceState({}, '', '')
+  history.replaceState({}, '', '?')
 }
 
 const onSlideChange = (swiper) => {
