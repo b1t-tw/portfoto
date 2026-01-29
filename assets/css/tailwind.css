@@ -36,9 +36,6 @@
 .popup-container {
   @apply fixed top-0 left-0 w-full h-full p-2 z-50 bg-[#000A];
   transition: opacity 0.2s ease-in-out;
-  &:not(.show) {
-    @apply opacity-0 z-[-10];
-  }
 }
 
 .collapse-children {
@@ -91,7 +88,11 @@
 }
 
 .fade-down-enter-active,
-.fade-down-leave-active {
+.fade-down-leave-active,
+.fade-up-enter-active,
+.fade-up-leave-active,
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.2s ease, transform 0.3s ease;
 }
 
@@ -101,13 +102,13 @@
   transform: translateY(-10px);
 }
 
-.fade-up-enter-active,
-.fade-up-leave-active {
-  transition: opacity 0.2s ease, transform 0.3s ease;
-}
-
 .fade-up-enter-from,
 .fade-up-leave-to {
   opacity: 0;
   transform: translateY(10px);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
