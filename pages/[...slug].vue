@@ -98,7 +98,7 @@ const currentNav = computed(() => contentBrief.value?.filter(item => {
 </script>
 
 <template>
-  <div>
+  <div class="min-w-0 min-h-0">
 
     <Head>
       <Title v-if="page?.title">{{ page.title }} - {{ info.title }}</Title>
