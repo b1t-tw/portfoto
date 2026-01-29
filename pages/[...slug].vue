@@ -73,17 +73,17 @@ const parseImageList = (gallery) => {
   return result
 }
 
-onMounted(() => {
-  watch(popup, (isPopup) => {
-    if (isPopup) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'auto'
-      setThumbsSwiper(null)
-    }
-  })
+watch(popup, (isPopup) => {
+  if (isPopup) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = 'auto'
+    setThumbsSwiper(null)
+  }
+})
 
-  watch(route, () => {
+onMounted(() => {
+  const checkPopup = () => {
     let url_params = new URLSearchParams(window.location.search)
     let index = Number(url_params.get('show'))
     if (index && !isNaN(index) && galleryImages.value.length) {
@@ -92,7 +92,12 @@ onMounted(() => {
     } else {
       popup.value = false
     }
-  }, { immediate: true })
+  }
+  checkPopup()
+
+  watch(route, () => {
+    checkPopup()
+  })
 })
 
 // Combined data fetching for better performance
