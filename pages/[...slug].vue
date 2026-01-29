@@ -73,6 +73,16 @@ const parseImageList = (gallery) => {
   return result
 }
 
+function handleQueryShow() {
+  let index = Number(route.query.show)
+  if (!isNaN(index) && galleryImages.value.length) {
+    popup.value = true
+    initialSlide.value = index
+  } else {
+    popup.value = false
+  }
+}
+
 watch(popup, (isPopup) => {
   if (isPopup) {
     document.body.style.overflow = 'hidden'
@@ -82,18 +92,12 @@ watch(popup, (isPopup) => {
   }
 })
 
+watch(route, () => {
+  handleQueryShow()
+})
+
 onMounted(() => {
-  nextTick(() => {
-    watch(route, () => {
-      let index = Number(route.query.show)
-      if (!isNaN(index) && galleryImages.value.length) {
-        popup.value = true
-        initialSlide.value = index
-      } else {
-        popup.value = false
-      }
-    }, { immediate: true })
-  })
+  handleQueryShow()
 })
 
 // Combined data fetching for better performance
