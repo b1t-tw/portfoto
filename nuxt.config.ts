@@ -20,19 +20,19 @@ export default defineNuxtConfig({
       }
     },
     routeRules: {
-      '/**': { 
+      '/**': {
         headers: {
           'Cache-Control': 'public, max-age=300, s-maxage=300'
         }
       },
-      '/resized/**': { 
+      '/resized/**': {
         headers: {
           'Cache-Control': 'public, max-age=31536000, immutable'
         }
       }
     }
   },
-  
+
   content: {
     build: {
       pathMeta: {},
@@ -43,33 +43,32 @@ export default defineNuxtConfig({
       }
     }
   },
-  
+
   vue: {
     compilerOptions: {
       isCustomElement: (tag) => tag.startsWith('swiper-')
     }
   },
-  
+
   // Performance optimizations
-  experimental: { 
+  experimental: {
     appManifest: false,
     payloadExtraction: false,
     renderJsonPayloads: true
   },
-  
+
   // Build optimizations
   build: {
     transpile: ['swiper']
   },
-  
+
   // Vite optimizations
   vite: {
     build: {
       rollupOptions: {
         output: {
           manualChunks: {
-            'swiper': ['swiper'],
-            'sharp': ['sharp']
+            'swiper': ['swiper']
           }
         }
       }
@@ -78,7 +77,7 @@ export default defineNuxtConfig({
       include: ['swiper/element/bundle']
     }
   },
-  
+
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
   postcss: {

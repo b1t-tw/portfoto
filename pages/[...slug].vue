@@ -1,5 +1,6 @@
 <script setup>
 import { register } from 'swiper/element/bundle'
+import { Icon } from "@iconify/vue"
 import images from '@/public/images.json'
 
 defineProps(['info'])
@@ -117,16 +118,18 @@ onMounted(() => {
 
   <!-- Popup Gallery -->
   <div :class="popup ? 'show' : ''" class="popup-container">
-    <div @click="popup = false" class="absolute top-2 right-2 cursor-pointer z-10">
-      <i class="text-gray-800 text-[2.5rem] bi bi-x"></i>
+    <div @click="popup = false" class="absolute top-2 right-2 cursor-pointer z-10 text-gray-600">
+      <Icon icon="mdi:window-close" width="36" height="36" />
     </div>
     <div class="min-w-0 min-h-0 h-full w-full flex flex-col bg-white p-2">
       <template v-if="popup && galleryImages.length">
         <swiper-container thumbs-swiper=".gallery-thumbs" navigation="true" slides-per-view="1" space-between="30"
-          loop="true" :initial-slide="initialSlide" effect="fade" cross-fade="true" class="gallery-swiper w-full h-[80%] my-auto">
+          loop="true" :initial-slide="initialSlide" effect="fade" cross-fade="true"
+          class="gallery-swiper w-full h-[80%] my-auto">
           <swiper-slide v-for="(image, index) in galleryImages" :key="image" class="bg-white" lazy="true">
             <div class="flex justify-center items-center h-full w-full">
-              <ResizedImg :src="image" size="large" class="h-full w-full object-contain m-auto" :loading="index === initialSlide ? 'eager' : 'lazy'" />
+              <ResizedImg :src="image" size="large" class="h-full w-full object-contain m-auto"
+                :loading="index === initialSlide ? 'eager' : 'lazy'" />
             </div>
           </swiper-slide>
         </swiper-container>
@@ -162,11 +165,10 @@ onMounted(() => {
     <!-- Gallery Grid -->
     <div v-if="galleryImages.length" class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
       <div v-for="(image, index) in galleryImages" :key="image" class="aspect-square hover-opacity">
-        <ResizedImg @click="() => { 
+        <ResizedImg @click="() => {
           initialSlide = index; popup = true;
           console.log('click on index', index)
-        }" :src="image" size="small"
-          class="rounded w-full h-full object-cover cursor-pointer" loading="lazy" />
+        }" :src="image" size="small" class="rounded w-full h-full object-cover cursor-pointer" loading="lazy" />
       </div>
     </div>
 

@@ -1,6 +1,8 @@
 <script setup>
 import '@/assets/css/custom.css'
 import info from '@/public/info.json'
+import { Icon } from "@iconify/vue"
+
 const { data: navContents } = await useAsyncData('navContents', () => {
   return queryCollectionNavigation('content')
 })
@@ -30,11 +32,11 @@ watch(() => route.path, () => {
         <img :src="info.avatar" class="rounded w-40" />
       </a>
       <div @click="openMenu()" class="ms-auto text-[2rem] bg-white">
-        <i class="bi bi-list"></i>
+        <Icon icon="mdi:menu" width="36" height="36" />
       </div>
       <div v-if="isMenuOpen" class="fixed top-0 left-0 w-full bg-white p-4 shadow-md fade-in-on-open">
-        <div @click="isMenuOpen = false" class="ms-auto bg-white text-right">
-          <i class="text-gray-800 text-[2.5rem] bi bi-x"></i>
+        <div @click="isMenuOpen = false" class="ms-auto bg-white text-right text-gray-600">
+          <Icon icon="mdi:window-close" width="36" height="36" />
         </div>
         <div class="flex flex-col items-center text-center">
           <h1 class="mb-2">{{ info.name }}</h1>
@@ -43,15 +45,20 @@ watch(() => route.path, () => {
           <div class="mb-3"><a :href="`tel:${info.phone}`">{{ info.phone }}</a></div>
           <div class="flex flex-wrap gap-2 text-2xl">
             <a v-if="info.instagram" :href="info.instagram" target="_blank" class="text-gray-600 font-semibold">
-              <i class="bi bi-instagram"></i></a>
+              <Icon icon="mdi:instagram" />
+            </a>
             <a v-if="info.facebook" :href="info.facebook" target="_blank" class="text-gray-600 font-semibold">
-              <i class="bi bi-facebook"></i></a>
+              <Icon icon="mdi:facebook" />
+            </a>
             <a v-if="info.twitter" :href="info.twitter" target="_blank" class="text-gray-600 font-semibold">
-              <i class="bi bi-twitter-x"></i></a>
+              <Icon icon="mdi:twitter-x" />
+            </a>
             <a v-if="info.linkedin" :href="info.linkedin" target="_blank" class="text-gray-600 font-semibold">
-              <i class="bi bi-linkedin"></i></a>
+              <Icon icon="mdi:linkedin" />
+            </a>
             <a v-if="info.github" :href="info.github" target="_blank" class="text-gray-600 font-semibold">
-              <i class="bi bi-github"></i></a>
+              <Icon icon="mdi:github" />
+            </a>
           </div>
         </div>
         <hr>
@@ -73,15 +80,20 @@ watch(() => route.path, () => {
             <div class="mb-3"><a :href="`tel:${info.phone}`">{{ info.phone }}</a></div>
             <div class="flex flex-wrap gap-2 text-2xl">
               <a v-if="info.instagram" :href="info.instagram" target="_blank" class="text-gray-600 font-semibold">
-                <i class="bi bi-instagram"></i></a>
+                <Icon icon="mdi:instagram" />
+              </a>
               <a v-if="info.facebook" :href="info.facebook" target="_blank" class="text-gray-600 font-semibold">
-                <i class="bi bi-facebook"></i></a>
+                <Icon icon="mdi:facebook" />
+              </a>
               <a v-if="info.twitter" :href="info.twitter" target="_blank" class="text-gray-600 font-semibold">
-                <i class="bi bi-twitter-x"></i></a>
+                <Icon icon="mdi:twitter-x" />
+              </a>
               <a v-if="info.linkedin" :href="info.linkedin" target="_blank" class="text-gray-600 font-semibold">
-                <i class="bi bi-linkedin"></i></a>
+                <Icon icon="mdi:linkedin" />
+              </a>
               <a v-if="info.github" :href="info.github" target="_blank" class="text-gray-600 font-semibold">
-                <i class="bi bi-github"></i></a>
+                <Icon icon="mdi:github" />
+              </a>
             </div>
           </div>
         </div>
