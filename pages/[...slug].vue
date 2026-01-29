@@ -86,7 +86,7 @@ onMounted(() => {
   watch(route, () => {
     let url_params = new URLSearchParams(window.location.search)
     let index = Number(url_params.get('show'))
-    if (!isNaN(index) && galleryImages.value.length) {
+    if (index && !isNaN(index) && galleryImages.value.length) {
       popup.value = true
       initialSlide.value = index
     } else {
