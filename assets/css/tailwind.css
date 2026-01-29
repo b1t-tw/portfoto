@@ -52,8 +52,8 @@
   max-height: 100vh;
 }
 
-swiper-container {
-  --swiper-theme-color: theme('colors.gray.100');
+.swiper {
+  --swiper-theme-color: theme('colors.gray.400');
   --swiper-navigation-sides-offset: 0;
   --swiper-navigation-size: 2rem;
   &::part(button-prev), &::part(button-next) {
@@ -86,7 +86,25 @@ swiper-container {
     transform: translateY(0);
   }
 }
-.fade-in-on-open {
+
+.fade-down-enter-active,
+.fade-down-leave-active {
+  transition: opacity 0.2s ease, transform 0.3s ease;
+}
+
+.fade-down-enter-from,
+.fade-down-leave-to {
   opacity: 0;
-  animation: fadeIn 0.2s ease-in-out forwards;
+  transform: translateY(-10px);
+}
+
+.fade-up-enter-active,
+.fade-up-leave-active {
+  transition: opacity 0.2s ease, transform 0.3s ease;
+}
+
+.fade-up-enter-from,
+.fade-up-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
 }

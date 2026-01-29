@@ -11,28 +11,6 @@ export const contentDir = () => {
 }
 
 export default defineNuxtConfig({
-  // Performance optimizations
-  nitro: {
-    storage: {
-      fs: {
-        driver: 'fs',
-        base: './.nitro/storage'
-      }
-    },
-    routeRules: {
-      '/**': {
-        headers: {
-          'Cache-Control': 'public, max-age=300, s-maxage=300'
-        }
-      },
-      '/resized/**': {
-        headers: {
-          'Cache-Control': 'public, max-age=31536000, immutable'
-        }
-      }
-    }
-  },
-
   content: {
     build: {
       pathMeta: {},
@@ -50,35 +28,11 @@ export default defineNuxtConfig({
     }
   },
 
-  // Performance optimizations
-  experimental: {
-    appManifest: false,
-    payloadExtraction: false,
-    renderJsonPayloads: true
+  app: {
+    pageTransition: { name: 'fade-down', mode: 'out-in' },
   },
 
-  // Build optimizations
-  build: {
-    transpile: ['swiper']
-  },
-
-  // Vite optimizations
-  vite: {
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            'swiper': ['swiper']
-          }
-        }
-      }
-    },
-    optimizeDeps: {
-      include: ['swiper/element/bundle']
-    }
-  },
-
-  compatibilityDate: '2024-11-01',
+  compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   postcss: {
     plugins: {
