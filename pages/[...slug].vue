@@ -97,7 +97,9 @@ watch(route, () => {
 })
 
 onMounted(() => {
-  handleQueryShow()
+  nextTick(() => {
+    handleQueryShow()
+  })
 })
 
 // Combined data fetching for better performance
@@ -153,36 +155,37 @@ const currentNav = computed(() => contentBrief.value?.filter(item => {
       <Title v-else>{{ info.title }}</Title>
     </Head>
     <!-- Popup Gallery -->
-    <div :class="popup ? 'show' : ''" class="popup-container">
-      <div @click="onPopClose" class="absolute top-3 right-3 cursor-pointer z-10 text-gray-600">
-        <Icon icon="mdi:window-close" width="30" height="30" />
+    <ClientOnly>
+      <div :class="popup ? 'show' : ''" class="popup-container">
+        <div @click="onPopClose" class="absolute top-3 right-3 cursor-pointer z-10 text-gray-600">
+          <Icon icon="mdi:window-close" width="30" height="30" />
+        </div>
+        <div class="min-w-0 min-h-0 h-full w-full flex flex-col bg-white p-2">
+          <template v-if="popup && galleryImages.length">
+            <swiper :modules="[Navigation, Thumbs, EffectFade]" :thumbs="{ swiper: thumbsSwiper }" :navigation="true"
+              @slideChange="onSlideChange" :slides-per-view="1" :space-between="30" :loop="true"
+              :initial-slide="initialSlide" effect="fade" :lazy="true" class="gallery-swiper w-full h-[80%] my-auto">
+              <SwiperSlide v-for="(image, index) in galleryImages" :key="image" class="bg-white">
+                <div class="flex justify-center items-center h-full w-full">
+                  <ResizedImg :src="image" size="large" class="h-full w-full object-contain m-auto"
+                    :loading="index === initialSlide ? 'eager' : 'lazy'" />
+                </div>
+              </SwiperSlide>
+            </swiper>
+          </template>
+          <template v-if="popup && galleryImages.length">
+            <swiper slides-per-view="auto" :space-between="10" :watch-slides-progress="true" :modules="[Thumbs]"
+              @swiper="setThumbsSwiper" class="gallery-thumbs w-full h-[10%]">
+              <SwiperSlide v-for="image in galleryImages" :key="image" class="bg-white" style="width: auto;">
+                <div class="flex justify-center items-center h-full aspect-square cursor-pointer">
+                  <ResizedImg :src="image" size="small" class="h-full w-full object-cover m-auto" loading="lazy" />
+                </div>
+              </SwiperSlide>
+            </swiper>
+          </template>
+        </div>
       </div>
-      <div class="min-w-0 min-h-0 h-full w-full flex flex-col bg-white p-2">
-        <template v-if="popup && galleryImages.length">
-          <swiper :modules="[Navigation, Thumbs, EffectFade]" :thumbs="{ swiper: thumbsSwiper }" :navigation="true"
-            @slideChange="onSlideChange" :slides-per-view="1" :space-between="30" :loop="true"
-            :initial-slide="initialSlide" effect="fade" :lazy="true" class="gallery-swiper w-full h-[80%] my-auto">
-            <SwiperSlide v-for="(image, index) in galleryImages" :key="image" class="bg-white">
-              <div class="flex justify-center items-center h-full w-full">
-                <ResizedImg :src="image" size="large" class="h-full w-full object-contain m-auto"
-                  :loading="index === initialSlide ? 'eager' : 'lazy'" />
-              </div>
-            </SwiperSlide>
-          </swiper>
-        </template>
-        <template v-if="popup && galleryImages.length">
-          <swiper slides-per-view="auto" :space-between="10" :watch-slides-progress="true" :modules="[Thumbs]"
-            @swiper="setThumbsSwiper" class="gallery-thumbs w-full h-[10%]">
-            <SwiperSlide v-for="image in galleryImages" :key="image" class="bg-white" style="width: auto;">
-              <div class="flex justify-center items-center h-full aspect-square cursor-pointer">
-                <ResizedImg :src="image" size="small" class="h-full w-full object-cover m-auto" loading="lazy" />
-              </div>
-            </SwiperSlide>
-          </swiper>
-        </template>
-      </div>
-    </div>
-
+    </ClientOnly>
     <!-- Main Content -->
     <div v-if="page" class="min-w-0 min-h-0 my-auto">
       <h3 v-if="page.showTitle && page.title" class="mb-6 text-right text-gray-600">{{ page.title }}</h3>
