@@ -89,7 +89,7 @@ const { data: pageData, pending } = await useAsyncData(
 const page = computed(() => pageData.value?.page)
 const galleryImages = computed(() => pageData.value?.galleryImages || [])
 const bannerImages = computed(() => pageData.value?.bannerImages || [])
-const currentNav = computed(() => contentBrief.value.filter(item => {
+const currentNav = computed(() => contentBrief.value?.filter(item => {
   return item.path.startsWith(route.path)
 }).sort((a, b) => b.path.split('/').pop() - a.path.split('/').pop()))
 
