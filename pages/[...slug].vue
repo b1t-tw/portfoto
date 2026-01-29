@@ -83,21 +83,15 @@ watch(popup, (isPopup) => {
 })
 
 onMounted(() => {
-  const checkPopup = () => {
-    let url_params = new URLSearchParams(window.location.search)
-    let index = Number(url_params.get('show'))
-    if (index && !isNaN(index) && galleryImages.value.length) {
+  watch(route, () => {
+    let index = Number(route.query.show)
+    if (!isNaN(index) && galleryImages.value.length) {
       popup.value = true
       initialSlide.value = index
     } else {
       popup.value = false
     }
-  }
-  checkPopup()
-
-  watch(route, () => {
-    checkPopup()
-  })
+  }, { immediate: true })
 })
 
 // Combined data fetching for better performance
