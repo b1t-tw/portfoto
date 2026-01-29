@@ -64,6 +64,10 @@
     --swiper-navigation-top-offset: 90%;
     --swiper-navigation-sides-offset: 30%;
   }
+  .swiper-slide {
+    backface-visibility: hidden; 
+    -webkit-backface-visibility: hidden; 
+  }
 }
 
 .gallery-thumbs {

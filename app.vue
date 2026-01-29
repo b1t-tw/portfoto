@@ -27,20 +27,20 @@ watch(() => route.path, () => {
     <Head>
       <Title>{{ info.title }}</Title>
       <Meta name="description" :content="info.description" />
-      <link rel="icon" type="image/png" href="/favicon.png" />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     </Head>
     <div class="container mx-auto max-w-full-lg">
       <div class="sticky md:hidden top-0 left-0 w-full z-50 flex p-4 bg-white">
         <a href="/">
           <img :src="info.avatar" class="rounded w-40" />
         </a>
-        <div @click="openMenu()" class="ms-auto text-[2rem] bg-white">
-          <Icon icon="mdi:menu" width="36" height="36" />
+        <div @click="openMenu()" class="ms-auto text-[2rem] bg-white text-gray-600">
+          <Icon icon="mdi:menu" width="32" height="32" />
         </div>
         <Transition name="fade-down">
           <div v-if="isMenuOpen" class="fixed top-0 left-0 w-full bg-white p-4 shadow-md">
             <div @click="isMenuOpen = false" class="text-gray-600 flex">
-              <Icon icon="mdi:window-close" width="36" height="36" class="ms-auto" />
+              <Icon icon="mdi:window-close" width="32" height="32" class="ms-auto" />
             </div>
             <div class="flex flex-col items-center text-center">
               <h1 class="mb-2">{{ info.name }}</h1>

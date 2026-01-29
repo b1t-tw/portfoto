@@ -35,6 +35,25 @@ if (images && Array.isArray(images)) {
   })
 }
 
+const onGalleryClick = (index) => {
+  initialSlide.value = index
+  popup.value = true
+  history.pushState({}, '', '?show=false')
+  history.pushState({}, '', `?show=${index}`)
+}
+
+const onPopClose = () => {
+  popup.value = false
+  history.replaceState({}, '', '')
+}
+
+const onSlideChange = (swiper) => {
+  console.log('slide changed', swiper.realIndex)
+  if (popup.value) {
+    history.replaceState({}, '', `?show=${swiper.realIndex}`)
+  }
+}
+
 const parseImageList = (gallery) => {
   if (!gallery || !Array.isArray(gallery)) return []
 
@@ -54,13 +73,26 @@ const parseImageList = (gallery) => {
   return result
 }
 
-watch(popup, (isPopup) => {
-  if (isPopup) {
-    document.body.style.overflow = 'hidden'
-  } else {
-    document.body.style.overflow = 'auto'
-    setThumbsSwiper(null)
-  }
+onMounted(() => {
+  watch(popup, (isPopup) => {
+    if (isPopup) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'auto'
+      setThumbsSwiper(null)
+    }
+  })
+
+  watch(route, () => {
+    let url_params = new URLSearchParams(window.location.search)
+    let index = Number(url_params.get('show'))
+    if (!isNaN(index) && galleryImages.value.length) {
+      popup.value = true
+      initialSlide.value = index
+    } else {
+      popup.value = false
+    }
+  }, { immediate: true })
 })
 
 // Combined data fetching for better performance
@@ -95,6 +127,7 @@ const bannerImages = computed(() => pageData.value?.bannerImages || [])
 const currentNav = computed(() => contentBrief.value?.filter(item => {
   return item.path.startsWith(route.path)
 }).sort((a, b) => b.path.split('/').pop() - a.path.split('/').pop()))
+
 </script>
 
 <template>
@@ -106,14 +139,14 @@ const currentNav = computed(() => contentBrief.value?.filter(item => {
     </Head>
     <!-- Popup Gallery -->
     <div :class="popup ? 'show' : ''" class="popup-container">
-      <div @click="popup = false" class="absolute top-3 right-3 cursor-pointer z-10 text-gray-400">
+      <div @click="onPopClose" class="absolute top-3 right-3 cursor-pointer z-10 text-gray-600">
         <Icon icon="mdi:window-close" width="30" height="30" />
       </div>
       <div class="min-w-0 min-h-0 h-full w-full flex flex-col bg-white p-2">
         <template v-if="popup && galleryImages.length">
           <swiper :modules="[Navigation, Thumbs, EffectFade]" :thumbs="{ swiper: thumbsSwiper }" :navigation="true"
-            :slides-per-view="1" :space-between="30" :loop="true" :initial-slide="initialSlide" effect="fade"
-            :cross-fade="true" :lazy="true" class="gallery-swiper w-full h-[80%] my-auto">
+            @slideChange="onSlideChange" :slides-per-view="1" :space-between="30" :loop="true"
+            :initial-slide="initialSlide" effect="fade" :lazy="true" class="gallery-swiper w-full h-[80%] my-auto">
             <SwiperSlide v-for="(image, index) in galleryImages" :key="image" class="bg-white">
               <div class="flex justify-center items-center h-full w-full">
                 <ResizedImg :src="image" size="large" class="h-full w-full object-contain m-auto"
@@ -156,10 +189,8 @@ const currentNav = computed(() => contentBrief.value?.filter(item => {
       <!-- Gallery Grid -->
       <div v-if="galleryImages.length" class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <div v-for="(image, index) in galleryImages" :key="image" class="aspect-square hover-opacity">
-          <ResizedImg @click="() => {
-            initialSlide = index; popup = true;
-            console.log('click on index', index)
-          }" :src="image" size="small" class="rounded w-full h-full object-cover cursor-pointer" loading="lazy" />
+          <ResizedImg @click="() => onGalleryClick(index)" :src="image" size="small"
+            class="rounded w-full h-full object-cover cursor-pointer" loading="lazy" />
         </div>
       </div>
       <ContentRenderer :value="page" />
