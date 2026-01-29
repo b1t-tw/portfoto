@@ -11,6 +11,14 @@ export const contentDir = () => {
 }
 
 export default defineNuxtConfig({
+  experimental: {
+    defaults: {
+      nuxtLink: {
+        trailingSlash: 'append'
+      }
+    }
+  },
+
   content: {
     build: {
       pathMeta: {},
