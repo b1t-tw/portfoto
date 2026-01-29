@@ -83,15 +83,17 @@ watch(popup, (isPopup) => {
 })
 
 onMounted(() => {
-  watch(route, () => {
-    let index = Number(route.query.show)
-    if (!isNaN(index) && galleryImages.value.length) {
-      popup.value = true
-      initialSlide.value = index
-    } else {
-      popup.value = false
-    }
-  }, { immediate: true })
+  nextTick(() => {
+    watch(route, () => {
+      let index = Number(route.query.show)
+      if (!isNaN(index) && galleryImages.value.length) {
+        popup.value = true
+        initialSlide.value = index
+      } else {
+        popup.value = false
+      }
+    }, { immediate: true })
+  })
 })
 
 // Combined data fetching for better performance
@@ -114,7 +116,7 @@ const { data: pageData, pending } = await useAsyncData(
     }
   },
   {
-    watch: [route],
+    watch: [() => route.path],
     default: () => null
   }
 )
@@ -125,7 +127,17 @@ const galleryImages = computed(() => pageData.value?.galleryImages || [])
 const bannerImages = computed(() => pageData.value?.bannerImages || [])
 const currentNav = computed(() => contentBrief.value?.filter(item => {
   return item.path.startsWith(route.path)
-}).sort((a, b) => b.path.split('/').pop() - a.path.split('/').pop()))
+}).sort((a, b) => {
+  const aLast = a.path.split('/').pop()
+  const bLast = b.path.split('/').pop()
+  const aNum = Number(aLast)
+  const bNum = Number(bLast)
+
+  if (!isNaN(aNum) && !isNaN(bNum)) {
+    return bNum - aNum
+  }
+  return String(bLast).localeCompare(String(aLast))
+}))
 
 </script>
 
