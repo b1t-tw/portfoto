@@ -27,6 +27,7 @@ watch(() => route.path, () => {
     <Head>
       <Title>{{ info.title }}</Title>
       <Meta name="description" :content="info.description" />
+      <link rel="icon" type="image/png" href="/favicon.png" />
     </Head>
     <div class="container mx-auto max-w-full-lg">
       <div class="sticky md:hidden top-0 left-0 w-full z-50 flex p-4 bg-white">
