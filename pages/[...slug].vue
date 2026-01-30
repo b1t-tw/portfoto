@@ -162,10 +162,9 @@ const currentNav = computed(() => contentBrief.value?.filter(item => {
             <Icon icon="mdi:window-close" width="30" height="30" />
           </div>
           <div class="min-w-0 min-h-0 h-full w-full flex flex-col bg-white p-2">
-            <swiper :modules="[Navigation, Thumbs, EffectFade]" :thumbs="{ swiper: thumbsSwiper }" :navigation="true"
+            <swiper :modules="[Navigation, Thumbs]" :thumbs="{ swiper: thumbsSwiper }" :navigation="true"
               @slideChange="onSlideChange" :slides-per-view="1" :space-between="30" :loop="true"
-              :initial-slide="initialSlide" effect="fade" :fade-effect-cross-fade="true" :lazy="true"
-              class="gallery-swiper w-full h-[80%] my-auto">
+              :initial-slide="initialSlide" :lazy="true" class="gallery-swiper w-full h-[80%] my-auto">
               <SwiperSlide v-for="(image, index) in galleryImages" :key="image" class="bg-white">
                 <div class="flex justify-center items-center h-full w-full">
                   <ResizedImg :src="image" size="large" class="h-full w-full object-contain m-auto"
