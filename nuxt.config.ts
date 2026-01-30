@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { readdirSync, statSync, writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs'
+import { readdirSync, statSync, writeFileSync, readFileSync, existsSync, mkdirSync, cpSync } from 'fs'
 import { join, relative, resolve, dirname, extname } from 'path'
 import yaml from 'yaml'
 import sharp from 'sharp'
@@ -132,6 +132,14 @@ export default defineNuxtConfig({
       const infoYaml = readFileSync(infoPath, 'utf8')
       const infoData = yaml.parse(infoYaml)
       writeFileSync(infoJsonPath, JSON.stringify(infoData, null, 2))
+
+      if (contentDir().includes('example')) {
+        const src = join(process.cwd(), 'content.example', 'public')
+        const dest = join(publicImgPath, 'example')
+        if (existsSync(src)) {
+          cpSync(src, dest, { recursive: true })
+        }
+      }
     }
   }
 })

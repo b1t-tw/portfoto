@@ -27,5 +27,3 @@ logs
 content/
 public/*
 assets/css/custom.css
-
-!public/examples/*
