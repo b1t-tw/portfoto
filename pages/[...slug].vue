@@ -162,28 +162,26 @@ const currentNav = computed(() => contentBrief.value?.filter(item => {
             <Icon icon="mdi:window-close" width="30" height="30" />
           </div>
           <div class="min-w-0 min-h-0 h-full w-full flex flex-col bg-white p-2">
-            <template v-if="popup && galleryImages.length">
-              <swiper :modules="[Navigation, Thumbs, EffectFade]" :thumbs="{ swiper: thumbsSwiper }" :navigation="true"
-                @slideChange="onSlideChange" :slides-per-view="1" :space-between="30" :loop="true"
-                :initial-slide="initialSlide" effect="fade" :lazy="true" class="gallery-swiper w-full h-[80%] my-auto">
-                <SwiperSlide v-for="(image, index) in galleryImages" :key="image" class="bg-white">
-                  <div class="flex justify-center items-center h-full w-full">
-                    <ResizedImg :src="image" size="large" class="h-full w-full object-contain m-auto"
-                      :loading="index === initialSlide ? 'eager' : 'lazy'" />
-                  </div>
-                </SwiperSlide>
-              </swiper>
-            </template>
-            <template v-if="popup && galleryImages.length">
-              <swiper slides-per-view="auto" :space-between="10" :watch-slides-progress="true" :modules="[Thumbs]"
-                @swiper="setThumbsSwiper" class="gallery-thumbs w-full h-[10%]">
-                <SwiperSlide v-for="image in galleryImages" :key="image" class="bg-white" style="width: auto;">
-                  <div class="flex justify-center items-center h-full aspect-square cursor-pointer">
-                    <ResizedImg :src="image" size="small" class="h-full w-full object-cover m-auto" loading="lazy" />
-                  </div>
-                </SwiperSlide>
-              </swiper>
-            </template>
+            <swiper :modules="[Navigation, Thumbs, EffectFade]" :thumbs="{ swiper: thumbsSwiper }" :navigation="true"
+              @slideChange="onSlideChange" :slides-per-view="1" :space-between="30" :loop="true"
+              :initial-slide="initialSlide" effect="fade" :fade-effect-cross-fade="true" :lazy="true"
+              class="gallery-swiper w-full h-[80%] my-auto">
+              <SwiperSlide v-for="(image, index) in galleryImages" :key="image" class="bg-white">
+                <div class="flex justify-center items-center h-full w-full">
+                  <ResizedImg :src="image" size="large" class="h-full w-full object-contain m-auto"
+                    :loading="index === initialSlide ? 'eager' : 'lazy'" />
+                </div>
+                <div class="swiper-lazy-preloader"></div>
+              </SwiperSlide>
+            </swiper>
+            <swiper slides-per-view="auto" :space-between="10" :watch-slides-progress="true" :modules="[Thumbs]"
+              @swiper="setThumbsSwiper" class="gallery-thumbs w-full h-[10%]">
+              <SwiperSlide v-for="image in galleryImages" :key="image" class="bg-white" style="width: auto;">
+                <div class="flex justify-center items-center h-full aspect-square cursor-pointer">
+                  <ResizedImg :src="image" size="small" class="h-full w-full object-cover m-auto" loading="lazy" />
+                </div>
+              </SwiperSlide>
+            </swiper>
           </div>
         </div>
       </Transition>
