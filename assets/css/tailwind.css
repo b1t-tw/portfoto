@@ -1,4 +1,3 @@
-@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
 @import "tailwindcss";
 
 @layer base {
@@ -37,9 +36,6 @@
 .popup-container {
   @apply fixed top-0 left-0 w-full h-full p-2 z-50 bg-[#000A];
   transition: opacity 0.2s ease-in-out;
-  &:not(.show) {
-    @apply opacity-0 z-[-10];
-  }
 }
 
 .collapse-children {
@@ -52,8 +48,8 @@
   max-height: 100vh;
 }
 
-swiper-container {
-  --swiper-theme-color: theme('colors.gray.100');
+.swiper {
+  --swiper-theme-color: theme('colors.gray.400');
   --swiper-navigation-sides-offset: 0;
   --swiper-navigation-size: 2rem;
   &::part(button-prev), &::part(button-next) {
@@ -63,6 +59,10 @@ swiper-container {
   @media (max-width: theme('screens.md')) {
     --swiper-navigation-top-offset: 90%;
     --swiper-navigation-sides-offset: 30%;
+  }
+  .swiper-slide {
+    backface-visibility: hidden; 
+    -webkit-backface-visibility: hidden; 
   }
 }
 
@@ -86,7 +86,29 @@ swiper-container {
     transform: translateY(0);
   }
 }
-.fade-in-on-open {
+
+.fade-down-enter-active,
+.fade-down-leave-active,
+.fade-up-enter-active,
+.fade-up-leave-active,
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.3s ease;
+}
+
+.fade-down-enter-from,
+.fade-down-leave-to {
   opacity: 0;
-  animation: fadeIn 0.2s ease-in-out forwards;
+  transform: translateY(-10px);
+}
+
+.fade-up-enter-from,
+.fade-up-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }

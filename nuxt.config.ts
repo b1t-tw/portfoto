@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { readdirSync, statSync, writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs'
+import { readdirSync, statSync, writeFileSync, readFileSync, existsSync, mkdirSync, cpSync } from 'fs'
 import { join, relative, resolve, dirname, extname } from 'path'
 import yaml from 'yaml'
 import sharp from 'sharp'
@@ -11,28 +11,14 @@ export const contentDir = () => {
 }
 
 export default defineNuxtConfig({
-  // Performance optimizations
-  nitro: {
-    storage: {
-      fs: {
-        driver: 'fs',
-        base: './.nitro/storage'
-      }
-    },
-    routeRules: {
-      '/**': { 
-        headers: {
-          'Cache-Control': 'public, max-age=300, s-maxage=300'
-        }
-      },
-      '/resized/**': { 
-        headers: {
-          'Cache-Control': 'public, max-age=31536000, immutable'
-        }
+  experimental: {
+    defaults: {
+      nuxtLink: {
+        trailingSlash: 'append'
       }
     }
   },
-  
+
   content: {
     build: {
       pathMeta: {},
@@ -43,43 +29,18 @@ export default defineNuxtConfig({
       }
     }
   },
-  
+
   vue: {
     compilerOptions: {
       isCustomElement: (tag) => tag.startsWith('swiper-')
     }
   },
-  
-  // Performance optimizations
-  experimental: { 
-    appManifest: false,
-    payloadExtraction: false,
-    renderJsonPayloads: true
+
+  app: {
+    pageTransition: { name: 'fade-down', mode: 'out-in' },
   },
-  
-  // Build optimizations
-  build: {
-    transpile: ['swiper']
-  },
-  
-  // Vite optimizations
-  vite: {
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            'swiper': ['swiper'],
-            'sharp': ['sharp']
-          }
-        }
-      }
-    },
-    optimizeDeps: {
-      include: ['swiper/element/bundle']
-    }
-  },
-  
-  compatibilityDate: '2024-11-01',
+
+  compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   postcss: {
     plugins: {
@@ -171,6 +132,14 @@ export default defineNuxtConfig({
       const infoYaml = readFileSync(infoPath, 'utf8')
       const infoData = yaml.parse(infoYaml)
       writeFileSync(infoJsonPath, JSON.stringify(infoData, null, 2))
+
+      if (contentDir().includes('example')) {
+        const src = join(process.cwd(), 'content.example', 'public')
+        const dest = join(publicImgPath, 'example')
+        if (existsSync(src)) {
+          cpSync(src, dest, { recursive: true })
+        }
+      }
     }
   }
 })
